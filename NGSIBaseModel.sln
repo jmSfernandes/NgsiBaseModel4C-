@@ -1,0 +1,22 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NGSIBaseModel", "NGSIBaseModel\NGSIBaseModel.csproj", "{3C4F684D-1DC5-4403-BB87-EAD79F3AB8C3}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NGSIBaseModel.Test", "NGSIBaseModel.Test\NGSIBaseModel.Test.csproj", "{F27417DD-5435-4DE2-9BB1-F7EFD6708CCD}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{3C4F684D-1DC5-4403-BB87-EAD79F3AB8C3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3C4F684D-1DC5-4403-BB87-EAD79F3AB8C3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3C4F684D-1DC5-4403-BB87-EAD79F3AB8C3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3C4F684D-1DC5-4403-BB87-EAD79F3AB8C3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F27417DD-5435-4DE2-9BB1-F7EFD6708CCD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F27417DD-5435-4DE2-9BB1-F7EFD6708CCD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F27417DD-5435-4DE2-9BB1-F7EFD6708CCD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F27417DD-5435-4DE2-9BB1-F7EFD6708CCD}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal

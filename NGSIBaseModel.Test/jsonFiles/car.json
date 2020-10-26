@@ -1,0 +1,29 @@
+{
+  "id": "car_1",
+  "type": "car",
+  "color": {
+    "type": "Text",
+    "value": "red"
+  },
+  "model": {
+    "type": "Text",
+    "value": "corvette"
+  },
+  "timestamp": {
+    "type": "ISO8601",
+    "value": "2020-10-07T09:50:00Z"
+  }, 
+  "encodeme": {
+    "type": "Text",
+    "value": "This%20car%20is%20a%20simple%20car%3d%3d!%22%28with%20a%20red%20hood%29"
+  },
+  "variations": {
+    "type": "Text",
+    "value": [
+      "Street",
+      "Lounge",
+      "Easy",
+      "SportsWagon"
+    ]
+  }
+}
