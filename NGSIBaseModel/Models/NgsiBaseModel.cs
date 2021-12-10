@@ -65,8 +65,11 @@ namespace NGSIBaseModel.Models
                 }
                 else if (value.Type == JTokenType.Date)
                 {
-                    DateTime dateTime = DateTime.Parse(value.ToString());
-                    property.SetValue(obj, dateTime.ToString("yyyy'-'MM'-'dd'T'HH':'mm':'ss'Z'"));
+                    DateTime dateTime = StringToDatetime(value.ToString());
+                    if (property.GetCustomAttributes().Contains(new NGSIDateTime()))
+                        property.SetValue(obj, dateTime);
+                    else
+                        property.SetValue(obj, DatetimeToString(dateTime));
                 }
                 else if (value.Type == JTokenType.Integer)
                 {
@@ -85,6 +88,10 @@ namespace NGSIBaseModel.Models
                     if (isJArray)
                     {
                         property.SetValue(obj, value.ToString());
+                    }
+                    else if (property.PropertyType.Name.ToLower().Equals("jarray"))
+                    {
+                        property.SetValue(obj, (JArray) value);
                     }
                     else
                     {
@@ -191,16 +198,21 @@ namespace NGSIBaseModel.Models
                     {
                         if (isJObject)
                             value = JObject.Parse((string) value);
+                        else
+                            isJObject = propertyType.Name.ToLower().Equals("jobject");
                         if (isJArray)
                             value = JArray.Parse((string) value);
+                        else
+                            isJArray = propertyType.Name.ToLower().Equals("jarray");
+
 
                         if (propertyType.IsClass && (isJArray || isJObject))
                         {
                             var attrJSON = SetJsonAttributeComplex(value, property, "object", isEncoded);
                             json.Add(property.Name.ToLower(), attrJSON);
                         }
-                        
-                       else if (propertyType.IsAnsiClass && isDate)
+
+                        else if (propertyType.IsAnsiClass && isDate)
                         {
                             var attrJSON = SetJsonAttributeComplex(value, property, "date", isEncoded);
                             json.Add(property.Name.ToLower(), attrJSON);
@@ -297,15 +309,22 @@ namespace NGSIBaseModel.Models
                 case ("array"):
                     JArray array = new JArray();
                     var type_generic = property.PropertyType.GetGenericArguments()[0];
-                    if (type_generic.GetProperty("id") == null)
-                        throw new Exception(
-                            "Properties of the type Objects must be a NGSIBaseModel compliant object as well");
-                    else if (!type_generic.GetProperty("id").PropertyType.Name.ToLower().Equals("string"))
-                        throw new Exception("The id of an Object property must be a string");
+                    if (!type_generic.Name.ToLower().Equals("string"))
+                    {
+                        if (type_generic.GetProperty("id") == null)
+                            throw new Exception(
+                                "Properties of the type Objects must be a NGSIBaseModel compliant object as well");
+                        else if (!type_generic.GetProperty("id").PropertyType.Name.ToLower().Equals("string"))
+                            throw new Exception("The id of an Object property must be a string");
+                    }
 
                     foreach (var v in (IEnumerable) value)
                     {
-                        string val_v = (string) v.GetType().GetProperty("id").GetValue(v);
+                        string val_v;
+                        if (type_generic.Name.ToLower().Equals("string"))
+                            val_v = (string) v;
+                        else
+                            val_v = (string) v.GetType().GetProperty("id").GetValue(v);
                         if (isEncoded)
                             val_v = EncodeAttribute(val_v, property);
                         array.Add(val_v);

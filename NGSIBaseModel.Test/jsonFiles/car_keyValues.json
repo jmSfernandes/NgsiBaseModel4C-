@@ -4,8 +4,21 @@
   "color": "red",
   "model": "corvette",
   "timestamp": "2020-10-07T09:50:00Z",
+  "timestamp1": "2020-10-07T09:50:00Z",
   "encodeme": "This%20car%20is%20a%20simple%20car%3d%3d!%22%28with%20a%20red%20hood%29",
   "variations": [
+    "Street",
+    "Lounge",
+    "Easy",
+    "SportsWagon"
+  ],
+  "variations1": [
+    "Street",
+    "Lounge",
+    "Easy",
+    "SportsWagon"
+  ],
+  "variations2": [
     "Street",
     "Lounge",
     "Easy",

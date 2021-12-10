@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Newtonsoft.Json.Linq;
 using NGSIBaseModel.Models;
 
 namespace NGSIBaseModel.Test.TestModels
@@ -14,7 +15,11 @@ namespace NGSIBaseModel.Test.TestModels
         
         [NGSIDateTime] public DateTime timestamp1 { get; set; }
 
-        [NGSIIgnore] public List<string> variations { get; set; }
+        [NGSIJArray] public string variations { get; set; }
+        
+        public JArray variations1 { get; set; }
+        
+        public List<String> variations2 { get; set; }
 
         [NGSIIgnore] public string ignoreMe { get; set; }
         

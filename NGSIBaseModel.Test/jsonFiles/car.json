@@ -29,5 +29,14 @@
       "Easy",
       "SportsWagon"
     ]
+  },
+  "variations1": {
+    "type": "Text",
+    "value": [
+      "Street",
+      "Lounge",
+      "Easy",
+      "SportsWagon"
+    ]
   }
 }

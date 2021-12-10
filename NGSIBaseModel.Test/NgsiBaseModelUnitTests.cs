@@ -52,21 +52,23 @@ namespace NGSIBaseModel.Test
             string expected = "This car is a simple car==!\"(with a red hood)";
             Assert.Equal(car.encodeMe, expected);
         }
+
         [Fact]
         public void TestFromNgsi()
         {
             Car test = InitCar();
-           
+
             JObject car_json = (JObject) TestUtils.ReadJsonFromFile("../../../jsonFiles/car.json");
             Car test_car = NgsiBaseModel.FromNgsi<Car>(car_json);
 
             Assert.Equal(test, test_car);
         }
+
         [Fact]
         public void TestFromNgsiKeyValues()
         {
             Car test = InitCar();
-           
+
             JObject car_json = (JObject) TestUtils.ReadJsonFromFile("../../../jsonFiles/car_keyValues.json");
             Car test_car = NgsiBaseModel.FromNgsi<Car>(car_json);
 
@@ -79,7 +81,7 @@ namespace NGSIBaseModel.Test
             Sensor expected = initSensor();
 
             JObject json = (JObject) TestUtils.ReadJsonFromFile("../../../jsonFiles/Sensor.json");
-            Sensor actual =NgsiBaseModel.FromNgsi<Sensor>(json);
+            Sensor actual = NgsiBaseModel.FromNgsi<Sensor>(json);
 
             Assert.Equal(expected, actual);
         }
@@ -101,10 +103,11 @@ namespace NGSIBaseModel.Test
             Sensor sensor = initSensor();
 
             JObject expected = (JObject) TestUtils.ReadJsonFromFile("../../../jsonFiles/Sensor.json");
-            JObject actual =NgsiBaseModel.ToNgsi<Sensor>(sensor);
+            JObject actual = NgsiBaseModel.ToNgsi<Sensor>(sensor);
 
             Assert.True(TestUtils.CompareJson(expected, actual));
         }
+
         private Car InitCar()
         {
             Car test = new Car();
@@ -117,15 +120,26 @@ namespace NGSIBaseModel.Test
 
 
             test.timestamp = "2020-10-07T09:50:00Z";
-            test.timestamp1 = new DateTime(2020,10,7,10,50,0).ToUniversalTime();
+            test.timestamp1 = new DateTime(2020, 10, 7, 10, 50, 0).ToUniversalTime();
             var a = NgsiBaseModel.DatetimeToString(test.timestamp1);
             var b = NgsiBaseModel.StringToDatetime(test.timestamp);
-            List<string> variations = new List<string>();
-            variations.Add("Street");
-            variations.Add("Lounge");
-            variations.Add("Easy");
-            variations.Add("SportsWagon");
-            test.variations = variations;
+            JArray variations = new JArray
+            {
+                "Street",
+                "Lounge",
+                "Easy",
+                "SportsWagon"
+            };
+            test.variations = variations.ToString();
+            test.variations1 = variations;
+            test.variations2 = new List<string>()
+            {
+                "Street",
+                "Lounge",
+                "Easy",
+                "SportsWagon"
+            };
+            
 
             return test;
         }
@@ -139,13 +153,13 @@ namespace NGSIBaseModel.Test
             test.timestamp = "2020-10-07T09:50:00Z";
             List<Accelerometer> accelerometers = new List<Accelerometer>();
             accelerometers.Add(new Accelerometer
-                {x = -0.384399, y =  2.5191802, z =  9.2885742, t = "2020-10-06T18:42:14Z"});
+                {x = -0.384399, y = 2.5191802, z = 9.2885742, t = "2020-10-06T18:42:14Z"});
             accelerometers.Add(new Accelerometer
-                {x =  -0.357467, y = 2.4694976, z =  9.5740814, t = "2020-10-06T18:42:14Z"});
+                {x = -0.357467, y = 2.4694976, z = 9.5740814, t = "2020-10-06T18:42:14Z"});
             accelerometers.Add(new Accelerometer
-                {x = -0.4628143, y =  2.37971496, z = 9.45077514, t = "2020-10-06T18:42:14Z"});
+                {x = -0.4628143, y = 2.37971496, z = 9.45077514, t = "2020-10-06T18:42:14Z"});
             accelerometers.Add(new Accelerometer
-                {x =  -0.4059600, y =  2.38749694, z =  9.59562683, t = "2020-10-06T18:42:14Z"});
+                {x = -0.4059600, y = 2.38749694, z = 9.59562683, t = "2020-10-06T18:42:14Z"});
             test.accelerometerList = accelerometers;
 
             return test;
