@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using Newtonsoft.Json.Linq;
 using NGSIBaseModel.Models;
 using NGSIBaseModel.Test.TestModels;
@@ -116,6 +117,9 @@ namespace NGSIBaseModel.Test
 
 
             test.timestamp = "2020-10-07T09:50:00Z";
+            test.timestamp1 = new DateTime(2020,10,7,10,50,0).ToUniversalTime();
+            var a = NgsiBaseModel.DatetimeToString(test.timestamp1);
+            var b = NgsiBaseModel.StringToDatetime(test.timestamp);
             List<string> variations = new List<string>();
             variations.Add("Street");
             variations.Add("Lounge");

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.Serialization;
@@ -181,6 +182,7 @@ namespace NGSIBaseModel.Models
                 var isEncoded = property.GetCustomAttributes().Contains(new NGSIEncode());
                 var isJObject = property.GetCustomAttributes().Contains(new NGSIJObject());
                 var isJArray = property.GetCustomAttributes().Contains(new NGSIJArray());
+                var isDate = property.GetCustomAttributes().Contains(new NGSIDateTime());
                 if (!isIgnore && (property.Name != "id"))
                 {
                     var value = obj.GetType().GetProperty(property.Name).GetValue(obj);
@@ -191,10 +193,16 @@ namespace NGSIBaseModel.Models
                             value = JObject.Parse((string) value);
                         if (isJArray)
                             value = JArray.Parse((string) value);
-                        
+
                         if (propertyType.IsClass && (isJArray || isJObject))
                         {
                             var attrJSON = SetJsonAttributeComplex(value, property, "object", isEncoded);
+                            json.Add(property.Name.ToLower(), attrJSON);
+                        }
+                        
+                       else if (propertyType.IsAnsiClass && isDate)
+                        {
+                            var attrJSON = SetJsonAttributeComplex(value, property, "date", isEncoded);
                             json.Add(property.Name.ToLower(), attrJSON);
                         }
                         else if (propertyType.IsGenericType &&
@@ -306,9 +314,14 @@ namespace NGSIBaseModel.Models
                     attrObj.Add("value", array);
                     attrObj.Add("type", "Text");
                     break;
+                case ("date"):
+                    attrObj.Add("value", DatetimeToString((DateTime) value));
+                    attrObj.Add("type", "ISO8601");
+                    break;
                 default:
                     break;
             }
+
 
             return attrObj;
         }
@@ -356,6 +369,17 @@ namespace NGSIBaseModel.Models
             }
 
             return true;
+        }
+
+        public static string DatetimeToString(DateTime value)
+        {
+            return $"{value.ToUniversalTime():yyyy-MM-dd'T'HH:mm:ss'Z'}";
+        }
+
+        public static DateTime StringToDatetime(string value)
+        {
+            return DateTime.Parse(
+                $"{value:yyyy-MM-dd HH:mm:ss}", CultureInfo.InvariantCulture).ToUniversalTime();
         }
     }
 }
