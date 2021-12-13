@@ -10,6 +10,7 @@ namespace NGSIBaseModel.Test.TestModels
         public string id { get; set; }
         public string model { get; set; }
         public string color { get; set; }
+        public int year { get; set; }
 
         public string timestamp { get; set; }
         

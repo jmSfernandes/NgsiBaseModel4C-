@@ -246,13 +246,15 @@ namespace NGSIBaseModel.Models
             JObject attrObj = new JObject();
             if (isEncoded)
                 value = EncodeAttribute(value.ToString(), property);
-            var value_json = JToken.Parse("{\"value\":\"" + value.ToString() + "\"}");
-            var type = value_json["value"].Type;
-            switch (type)
+
+            switch (JToken.FromObject(value).Type)
             {
                 case (JTokenType.String):
                     attrObj.Add("value", value.ToString());
-                    attrObj.Add("type", "Text");
+                    if (IsDatetime(value.ToString()))
+                        attrObj.Add("type", "ISO8601");
+                    else
+                        attrObj.Add("type", "Text");
                     break;
                 case (JTokenType.Date):
                     attrObj.Add("value", $"{value.ToString():yyyy-MM-dd HH:mm:ss}");
@@ -399,6 +401,19 @@ namespace NGSIBaseModel.Models
         {
             return DateTime.Parse(
                 $"{value:yyyy-MM-dd HH:mm:ss}", CultureInfo.InvariantCulture).ToUniversalTime();
+        }
+
+        public static bool IsDatetime(string value)
+        {
+            try
+            {
+                StringToDatetime(value);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                return false;
+            }
         }
     }
 }

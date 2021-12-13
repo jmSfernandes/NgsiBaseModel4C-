@@ -5,6 +5,10 @@
     "type": "Text",
     "value": "arduino_dth_11"
   },
+  "accuracy": {
+    "type": "Float",
+    "value": 0.5
+  },
   "timestamp": {
     "type": "ISO8601",
     "value": "2020-10-07T09:50:00Z"

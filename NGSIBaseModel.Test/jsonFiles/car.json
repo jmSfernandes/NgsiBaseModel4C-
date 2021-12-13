@@ -5,6 +5,10 @@
     "type": "Text",
     "value": "red"
   },
+  "year": {
+    "type": "Integer",
+    "value": 1987
+  },
   "model": {
     "type": "Text",
     "value": "corvette"
@@ -38,5 +42,16 @@
       "Easy",
       "SportsWagon"
     ]
+  },
+  "variations2": {
+    "type": "Text",
+    "value": [
+      "Street",
+      "Lounge",
+      "Easy",
+      "SportsWagon"
+    ]
   }
 }
+  
+  

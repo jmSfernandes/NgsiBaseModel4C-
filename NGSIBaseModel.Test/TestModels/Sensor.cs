@@ -7,7 +7,8 @@ namespace NGSIBaseModel.Test.TestModels
     {
         public string id { get; set; }
         public string model { get; set; }
-
+        
+        public float accuracy { get; set; }
         public List<Accelerometer> accelerometerList { get; set; }
 
         public string timestamp { get; set; }

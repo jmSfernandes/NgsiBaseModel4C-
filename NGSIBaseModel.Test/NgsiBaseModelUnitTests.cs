@@ -114,6 +114,7 @@ namespace NGSIBaseModel.Test
             test.id = "car_1";
             test.color = "red";
             test.model = "corvette";
+            test.year = 1987;
 
             test.encodeMe = "This car is a simple car==!\"(with a red hood)";
             test.ignoreMe = "I was ignored!";
@@ -150,6 +151,7 @@ namespace NGSIBaseModel.Test
             Sensor test = new Sensor();
             test.id = "sensor_1";
             test.model = "arduino_dth_11";
+            test.accuracy =  0.5f;
             test.timestamp = "2020-10-07T09:50:00Z";
             List<Accelerometer> accelerometers = new List<Accelerometer>();
             accelerometers.Add(new Accelerometer
