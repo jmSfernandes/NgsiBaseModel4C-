@@ -1,11 +1,8 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
 using System.Reflection;
-using System.Runtime.Serialization;
-using System.Web;
 using Newtonsoft.Json.Linq;
 
 namespace NGSIBaseModel.Models
@@ -56,7 +53,7 @@ namespace NGSIBaseModel.Models
                 if (value.Type == JTokenType.String)
                 {
                     if (isEncoded)
-                        value = DecodeAttribute(value, property);
+                        value = NgsiUtils.DecodeAttribute(value);
 
                     property.SetValue(obj, value.ToString());
                     /*if (property.Name.ToLower().Equals("picture"))
@@ -65,11 +62,14 @@ namespace NGSIBaseModel.Models
                 }
                 else if (value.Type == JTokenType.Date)
                 {
-                    DateTime dateTime = StringToDatetime(value.ToString());
+                    DateTime dateTime = NgsiUtils.StringToDatetime(value.ToString());
                     if (property.GetCustomAttributes().Contains(new NGSIDateTime()))
                         property.SetValue(obj, dateTime);
                     else
-                        property.SetValue(obj, DatetimeToString(dateTime));
+                    {
+                        dateTime=dateTime.ToLocalTime();
+                        property.SetValue(obj, NgsiUtils.DatetimeToString(dateTime));
+                    }
                 }
                 else if (value.Type == JTokenType.Integer)
                 {
@@ -105,7 +105,7 @@ namespace NGSIBaseModel.Models
                             {
                                 var val = v;
                                 if (isEncoded)
-                                    val = DecodeAttribute(val, property);
+                                    val = NgsiUtils.DecodeAttribute(val);
 
                                 if (itemType.Name.Equals("String"))
                                 {
@@ -148,7 +148,7 @@ namespace NGSIBaseModel.Models
         private static object SetObjectProperty(object obj, JToken value, PropertyInfo property, bool isEncoded)
         {
             if (isEncoded)
-                value = DecodeAttribute(value, property);
+                value = NgsiUtils.DecodeAttribute(value);
             Type objType = property.PropertyType;
             Object obj_sub = Activator.CreateInstance(objType);
             if (objType.BaseType != null && objType.BaseType == typeof(NgsiBaseModel))
@@ -245,13 +245,13 @@ namespace NGSIBaseModel.Models
         {
             JObject attrObj = new JObject();
             if (isEncoded)
-                value = EncodeAttribute(value.ToString(), property);
+                value = NgsiUtils.EncodeAttribute(value.ToString());
 
             switch (JToken.FromObject(value).Type)
             {
                 case (JTokenType.String):
                     attrObj.Add("value", value.ToString());
-                    if (IsDatetime(value.ToString()))
+                    if (NgsiUtils.IsDatetime(value.ToString()))
                         attrObj.Add("type", "ISO8601");
                     else
                         attrObj.Add("type", "Text");
@@ -302,7 +302,7 @@ namespace NGSIBaseModel.Models
                             throw new Exception("The id of an Object property must be a string");
                         string val = (string) value.GetType().GetProperty("id").GetValue(value);
                         if (isEncoded)
-                            val = EncodeAttribute(val, property);
+                            val = NgsiUtils.EncodeAttribute(val);
                         attrObj.Add("value", val);
                         attrObj.Add("type", "Text");
                     }
@@ -328,7 +328,7 @@ namespace NGSIBaseModel.Models
                         else
                             val_v = (string) v.GetType().GetProperty("id").GetValue(v);
                         if (isEncoded)
-                            val_v = EncodeAttribute(val_v, property);
+                            val_v = NgsiUtils.EncodeAttribute(val_v);
                         array.Add(val_v);
                     }
 
@@ -336,7 +336,7 @@ namespace NGSIBaseModel.Models
                     attrObj.Add("type", "Text");
                     break;
                 case ("date"):
-                    attrObj.Add("value", DatetimeToString((DateTime) value));
+                    attrObj.Add("value", NgsiUtils.DatetimeToString((DateTime) value));
                     attrObj.Add("type", "ISO8601");
                     break;
                 default:
@@ -347,19 +347,7 @@ namespace NGSIBaseModel.Models
             return attrObj;
         }
 
-
-        private static JToken DecodeAttribute(JToken value, PropertyInfo property)
-        {
-            var decoded = HttpUtility.UrlDecode(value.ToString());
-            return (JToken) new JValue(decoded);
-        }
-
-        private static string EncodeAttribute(string value, PropertyInfo property)
-        {
-            var encoded = HttpUtility.UrlEncode(value.ToString());
-            encoded = encoded.Replace("(", "%28").Replace(")", "%29").Replace("+", "%20");
-            return encoded;
-        }
+        
 
         public override bool Equals(object obj)
         {
@@ -370,8 +358,10 @@ namespace NGSIBaseModel.Models
                 try
                 {
                     var isIgnore = property.GetCustomAttributes().Contains(new NGSIIgnore());
-                    if (property.PropertyType.IsGenericType &&
-                        property.PropertyType.GetGenericTypeDefinition() == typeof(List<>))
+                    if(isIgnore)
+                        continue;
+                    if ((property.PropertyType.IsGenericType &&
+                        property.PropertyType.GetGenericTypeDefinition() == typeof(List<>))||property.PropertyType.Name.Equals("JArray"))
                     {
                         foreach (var value in (IEnumerable) property.GetValue(this))
                         {
@@ -379,7 +369,7 @@ namespace NGSIBaseModel.Models
                                 return false;
                         }
                     }
-                    else if (!property.GetValue(this).Equals(property.GetValue(obj)) && !isIgnore)
+                    else if (!property.GetValue(this).Equals(property.GetValue(obj)))
                         return false;
                 }
                 catch (Exception e)
@@ -392,28 +382,6 @@ namespace NGSIBaseModel.Models
             return true;
         }
 
-        public static string DatetimeToString(DateTime value)
-        {
-            return $"{value.ToUniversalTime():yyyy-MM-dd'T'HH:mm:ss'Z'}";
-        }
-
-        public static DateTime StringToDatetime(string value)
-        {
-            return DateTime.Parse(
-                $"{value:yyyy-MM-dd HH:mm:ss}", CultureInfo.InvariantCulture).ToUniversalTime();
-        }
-
-        public static bool IsDatetime(string value)
-        {
-            try
-            {
-                StringToDatetime(value);
-                return true;
-            }
-            catch (Exception ex)
-            {
-                return false;
-            }
-        }
+      
     }
 }

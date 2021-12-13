@@ -56,23 +56,23 @@ namespace NGSIBaseModel.Test
         [Fact]
         public void TestFromNgsi()
         {
-            Car test = InitCar();
+            Car expected = InitCar();
 
-            JObject car_json = (JObject) TestUtils.ReadJsonFromFile("../../../jsonFiles/car.json");
-            Car test_car = NgsiBaseModel.FromNgsi<Car>(car_json);
+            JObject carJson = (JObject) TestUtils.ReadJsonFromFile("../../../jsonFiles/car.json");
+            Car actual = NgsiBaseModel.FromNgsi<Car>(carJson);
 
-            Assert.Equal(test, test_car);
+            Assert.Equal(expected, actual);
         }
 
         [Fact]
         public void TestFromNgsiKeyValues()
         {
-            Car test = InitCar();
+            Car expected = InitCar();
 
-            JObject car_json = (JObject) TestUtils.ReadJsonFromFile("../../../jsonFiles/car_keyValues.json");
-            Car test_car = NgsiBaseModel.FromNgsi<Car>(car_json);
+            JObject carJson = (JObject) TestUtils.ReadJsonFromFile("../../../jsonFiles/car_keyValues.json");
+            Car actual = NgsiBaseModel.FromNgsi<Car>(carJson);
 
-            Assert.Equal(test, test_car);
+            Assert.Equal(expected, actual);
         }
 
         [Fact]
@@ -122,8 +122,8 @@ namespace NGSIBaseModel.Test
 
             test.timestamp = "2020-10-07T09:50:00Z";
             test.timestamp1 = new DateTime(2020, 10, 7, 10, 50, 0).ToUniversalTime();
-            var a = NgsiBaseModel.DatetimeToString(test.timestamp1);
-            var b = NgsiBaseModel.StringToDatetime(test.timestamp);
+            var a = NgsiUtils.DatetimeToString(test.timestamp1);
+            var b = NgsiUtils.StringToDatetime(test.timestamp);
             JArray variations = new JArray
             {
                 "Street",
