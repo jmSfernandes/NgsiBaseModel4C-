@@ -107,6 +107,27 @@ namespace NGSIBaseModel.Test
 
             Assert.True(TestUtils.CompareJson(expected, actual));
         }
+        
+        [Fact]
+        public void TestNgsiSmartphoneData()
+        {
+            SmartphoneData data = InitSmartphoneData();
+            
+            JObject actual = NgsiBaseModel.ToNgsi<SmartphoneData>(data);
+
+            Assert.NotNull( actual);
+        }
+        
+        [Fact]
+        public void TestNgsiSleepSegment()
+        {
+            SleepSegment data = InitSleepSegment();
+            
+            JObject actual = NgsiBaseModel.ToNgsi<SleepSegment>(data);
+
+            Assert.NotNull( actual);
+        }
+
 
         private Car InitCar()
         {
@@ -164,6 +185,45 @@ namespace NGSIBaseModel.Test
                 {x = -0.4059600, y = 2.38749694, z = 9.59562683, t = "2020-10-06T18:42:14Z"});
             test.accelerometerList = accelerometers;
 
+            return test;
+        }
+        private SmartphoneData InitSmartphoneData()
+        {
+            SmartphoneData test = new SmartphoneData();
+            test.id = "data_1";
+            test.activity = "Still";
+            test.operating_system = "Android";
+            test.timestamp = "2021-12-13T19:38:11.71Z";
+            test.location = "Other";
+            test.distanceHome = 0;
+            test.step_count = 0;
+            test.phone_lock = "False";
+            test.foregroundApp = "";
+            test.foregroundApp = "";
+            test.lightmax=40000;
+            test.lightmin=0;
+            test.lightavg=0;
+            test.proximity="0";
+            test.proximitymax=1;
+            test.proximitymin=0;
+            test.soundmax=32768;
+            test.soundmin=0;
+            test.soundavg=0;
+        
+            return test;
+        }
+        private SleepSegment InitSleepSegment()
+        {
+            SleepSegment test = new SleepSegment();
+            test.id = "ss_data_1";
+        
+            test.timestamp = "2021-12-13T19:38:11.71Z";
+            test.end = "2021-12-13T19:38:11.71Z";
+            test.start = "2021-12-13T10:38:11.71Z";
+            test.start = "2021-12-13T10:38:11.71Z";
+            test.duration = 30000000;
+            test.description = "test";
+            test.status = "1";
             return test;
         }
     }

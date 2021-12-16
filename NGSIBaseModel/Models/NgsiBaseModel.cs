@@ -261,11 +261,17 @@ namespace NGSIBaseModel.Models
                     attrObj.Add("type", "ISO8601");
                     break;
                 case (JTokenType.Integer):
-                    attrObj.Add("value", (Int32) value);
+                    if(property.PropertyType.Name.Equals("Int32"))
+                        attrObj.Add("value", (Int32) value);
+                    else
+                        attrObj.Add("value", (Int64) value);
                     attrObj.Add("type", "Integer");
                     break;
                 case (JTokenType.Float):
-                    attrObj.Add("value", (float) value);
+                    if(property.PropertyType.Name.Equals("Single"))
+                        attrObj.Add("value", (float) value);
+                    else
+                        attrObj.Add("value", (double) value);
                     attrObj.Add("type", "Float");
                     break;
                 default:
