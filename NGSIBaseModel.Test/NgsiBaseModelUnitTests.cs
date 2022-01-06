@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using MyPoc.Models;
 using Newtonsoft.Json.Linq;
 using NGSIBaseModel.Models;
 using NGSIBaseModel.Test.TestModels;
@@ -107,27 +108,53 @@ namespace NGSIBaseModel.Test
 
             Assert.True(TestUtils.CompareJson(expected, actual));
         }
-        
+
         [Fact]
         public void TestNgsiSmartphoneData()
         {
             SmartphoneData data = InitSmartphoneData();
-            
+
             JObject actual = NgsiBaseModel.ToNgsi<SmartphoneData>(data);
 
-            Assert.NotNull( actual);
+            Assert.NotNull(actual);
         }
-        
+
         [Fact]
         public void TestNgsiSleepSegment()
         {
             SleepSegment data = InitSleepSegment();
-            
+
             JObject actual = NgsiBaseModel.ToNgsi<SleepSegment>(data);
 
-            Assert.NotNull( actual);
+            Assert.NotNull(actual);
         }
 
+        [Fact]
+        public void TestNgsiMedicationEntry()
+        {
+            var data = InitMed();
+
+            var actual = NgsiBaseModel.ToNgsi<MedicationEntry>(data);
+
+            Assert.NotNull(actual);
+        }
+
+        [Fact]
+        public void TestNgsiMedicationEntryGroup()
+        {
+            var data = new MedicationEntryGroup();
+            data.id = "test_123";
+            var meds = new List<MedicationEntry>
+            {
+                InitMed(),
+                InitMed(),
+                InitMed()
+            };
+            data.meds = meds;
+            var actual=NgsiBaseModel.ToNgsi<MedicationEntryGroup>(data);
+
+            Assert.NotNull(actual);
+        }
 
         private Car InitCar()
         {
@@ -161,7 +188,7 @@ namespace NGSIBaseModel.Test
                 "Easy",
                 "SportsWagon"
             };
-            
+
 
             return test;
         }
@@ -172,7 +199,7 @@ namespace NGSIBaseModel.Test
             Sensor test = new Sensor();
             test.id = "sensor_1";
             test.model = "arduino_dth_11";
-            test.accuracy =  0.5f;
+            test.accuracy = 0.5f;
             test.timestamp = "2020-10-07T09:50:00Z";
             List<Accelerometer> accelerometers = new List<Accelerometer>();
             accelerometers.Add(new Accelerometer
@@ -187,6 +214,7 @@ namespace NGSIBaseModel.Test
 
             return test;
         }
+
         private SmartphoneData InitSmartphoneData()
         {
             SmartphoneData test = new SmartphoneData();
@@ -200,23 +228,24 @@ namespace NGSIBaseModel.Test
             test.phone_lock = "False";
             test.foregroundApp = "";
             test.foregroundApp = "";
-            test.lightmax=40000;
-            test.lightmin=0;
-            test.lightavg=0;
-            test.proximity="0";
-            test.proximitymax=1;
-            test.proximitymin=0;
-            test.soundmax=32768;
-            test.soundmin=0;
-            test.soundavg=0;
-        
+            test.lightmax = 40000;
+            test.lightmin = 0;
+            test.lightavg = 0;
+            test.proximity = "0";
+            test.proximitymax = 1;
+            test.proximitymin = 0;
+            test.soundmax = 32768;
+            test.soundmin = 0;
+            test.soundavg = 0;
+
             return test;
         }
+
         private SleepSegment InitSleepSegment()
         {
             SleepSegment test = new SleepSegment();
             test.id = "ss_data_1";
-        
+
             test.timestamp = "2021-12-13T19:38:11.71Z";
             test.end = "2021-12-13T19:38:11.71Z";
             test.start = "2021-12-13T10:38:11.71Z";
@@ -224,6 +253,23 @@ namespace NGSIBaseModel.Test
             test.duration = 30000000;
             test.description = "test";
             test.status = "1";
+            return test;
+        }
+
+
+        private MedicationEntry InitMed()
+        {
+            var test = new MedicationEntry
+            {
+                id = "med_1",
+                current = true,
+                StartDate = DateTime.UtcNow,
+                EndDate = null,
+                MedName = "Paracetamol (genrico)",
+                MedQuantity = "25 mg",
+                MedTimeOfDay = TimeOfDay.LunchTime
+            };
+
             return test;
         }
     }

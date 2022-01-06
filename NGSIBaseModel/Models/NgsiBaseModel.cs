@@ -32,7 +32,7 @@ namespace NGSIBaseModel.Models
                 {
                     if (attribute.Type == JTokenType.Object && attribute["value"] != null)
                     {
-                        JToken value = attribute["value"];
+                        var value = attribute["value"];
                         obj = SetValue<T>(obj, value, property, isEncoded, isJObject, isJArray);
                     }
                     else
@@ -62,7 +62,7 @@ namespace NGSIBaseModel.Models
                 }
                 else if (value.Type == JTokenType.Date)
                 {
-                    DateTime dateTime = NgsiUtils.StringToDatetime(value.ToString());
+                    var dateTime = NgsiUtils.StringToDatetime(value.ToString());
                     if (property.GetCustomAttributes().Contains(new NGSIDateTime()))
                         property.SetValue(obj, dateTime);
                     else
@@ -113,19 +113,19 @@ namespace NGSIBaseModel.Models
                                 }
                                 else
                                 {
-                                    Object obj_sub = Activator.CreateInstance(itemType);
+                                    var objSub = Activator.CreateInstance(itemType);
                                     if (itemType.BaseType != null && itemType.BaseType == typeof(NgsiBaseModel))
                                     {
-                                        obj_sub = typeof(NgsiBaseModel).GetMethod("FromNgsi")
+                                        objSub = typeof(NgsiBaseModel).GetMethod("FromNgsi")
                                             .MakeGenericMethod(itemType)
                                             .Invoke(typeof(NgsiBaseModel), new object[] {val});
                                     }
                                     else
                                     {
-                                        obj_sub.GetType().GetProperty("id").SetValue(obj_sub, val.ToString());
+                                        objSub.GetType().GetProperty("id").SetValue(objSub, val.ToString());
                                     }
 
-                                    array.GetType().GetMethod("Add").Invoke(array, new object[] {obj_sub});
+                                    array.GetType().GetMethod("Add").Invoke(array, new object[] {objSub});
                                 }
                             }
 
@@ -149,13 +149,13 @@ namespace NGSIBaseModel.Models
         {
             if (isEncoded)
                 value = NgsiUtils.DecodeAttribute(value);
-            Type objType = property.PropertyType;
-            Object obj_sub = Activator.CreateInstance(objType);
+            var objType = property.PropertyType;
+            var objSub = Activator.CreateInstance(objType);
             if (objType.BaseType != null && objType.BaseType == typeof(NgsiBaseModel))
             {
-                obj_sub = typeof(NgsiBaseModel).GetMethod("FromNgsi").MakeGenericMethod(objType)
+                objSub = typeof(NgsiBaseModel).GetMethod("FromNgsi").MakeGenericMethod(objType)
                     .Invoke(obj, new object[] {value});
-                property.SetValue(obj, obj_sub);
+                property.SetValue(obj, objSub);
             }
 
             return obj;
@@ -179,7 +179,7 @@ namespace NGSIBaseModel.Models
                 _id = (string) typeof(T).GetProperty("id").GetValue(obj);
             }
 
-            JObject json = new JObject();
+            var json = new JObject();
             json.Add("id", _id);
             json.Add("type", typeof(T).Name.ToLower());
 
@@ -241,9 +241,9 @@ namespace NGSIBaseModel.Models
         }
 
 
-        private static JToken SetJsonAttributeSimple(Object value, PropertyInfo property, bool isEncoded)
+        private static JToken SetJsonAttributeSimple(object value, PropertyInfo property, bool isEncoded)
         {
-            JObject attrObj = new JObject();
+            var attrObj = new JObject();
             if (isEncoded)
                 value = NgsiUtils.EncodeAttribute(value.ToString());
 
@@ -274,6 +274,10 @@ namespace NGSIBaseModel.Models
                         attrObj.Add("value", (double) value);
                     attrObj.Add("type", "Float");
                     break;
+                case (JTokenType.Boolean):
+                    attrObj.Add("value", (bool)value);
+                    attrObj.Add("type", "Boolean");
+                    break;
                 default:
                     break;
             }
@@ -282,9 +286,9 @@ namespace NGSIBaseModel.Models
         }
 
 
-        private static JToken SetJsonAttributeComplex(Object value, PropertyInfo property, String type, bool isEncoded)
+        private static JToken SetJsonAttributeComplex(object value, PropertyInfo property, string type, bool isEncoded)
         {
-            JObject attrObj = new JObject();
+            var attrObj = new JObject();
 
             switch (type)
             {
