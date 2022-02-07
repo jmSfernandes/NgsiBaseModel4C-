@@ -20,6 +20,7 @@ namespace NGSIBaseModel
             encoded = encoded.Replace("(", "%28").Replace(")", "%29").Replace("+", "%20");
             return encoded;
         }
+
         public static string DatetimeToString(DateTime value)
         {
             return $"{value.ToUniversalTime():yyyy-MM-dd'T'HH:mm:ss'Z'}";
@@ -36,6 +37,10 @@ namespace NGSIBaseModel
             {
                 StringToDatetime(value);
                 return true;
+            }
+            catch (FormatException fe)
+            {
+                return false;
             }
             catch (Exception ex)
             {

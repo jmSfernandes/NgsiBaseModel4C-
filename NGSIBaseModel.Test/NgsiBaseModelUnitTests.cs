@@ -269,7 +269,7 @@ namespace NGSIBaseModel.Test
                 MedQuantity = "25 mg",
                 MedTimeOfDay = TimeOfDay.LunchTime
             };
-
+            var j = new JObject {{"test", 1}};
             return test;
         }
     }
