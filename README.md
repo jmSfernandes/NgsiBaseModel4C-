@@ -1,6 +1,5 @@
 # NgsiBaseModel 4 C#
 [![Nuget badge](https://img.shields.io/nuget/v/NGSIBaseModel)](https://www.nuget.org/packages/NGSIBaseModel)
-
 [![Nuget badge](https://img.shields.io/nuget/dt/NGSIBaseModel)](https://www.nuget.org/packages/NGSIBaseModel)
 
 This is a multi-purpose parser for the NGSI10 standard.
