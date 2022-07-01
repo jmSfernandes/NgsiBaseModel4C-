@@ -1,6 +1,6 @@
 ﻿using NGSIBaseModel.Models;
 
-namespace Tests
+namespace NGSIBaseModel.Test.TestModels
 {
     public class NgsiModelTest : NgsiBaseModel
     {

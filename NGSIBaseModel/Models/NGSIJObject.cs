@@ -1,8 +1,6 @@
-﻿namespace NGSIBaseModel.Models
+﻿namespace NGSIBaseModel.Models;
+
+[System.AttributeUsage(System.AttributeTargets.Property)]
+public class NGSIJObject: System.Attribute
 {
-    
-    [System.AttributeUsage(System.AttributeTargets.Property)]
-    public class NGSIJObject: System.Attribute
-    {
-    }
 }

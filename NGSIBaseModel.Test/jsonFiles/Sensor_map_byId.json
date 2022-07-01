@@ -1,0 +1,25 @@
+{
+  "id": "sensor_1",
+  "type": "sensormapbyid",
+  "model": {
+    "type": "Text",
+    "value": "arduino_dth_11"
+  },
+  "accuracy": {
+    "type": "Float",
+    "value": 0.5
+  },
+  "timestamp": {
+    "type": "ISO8601",
+    "value": "2020-10-07T09:50:00Z"
+  },
+  "accelerometerlist": {
+    "type": "Text",
+    "value": [
+      "acel_1",
+      "acel_2",
+      "acel_3",
+      "acel_4"
+    ]
+  }
+}

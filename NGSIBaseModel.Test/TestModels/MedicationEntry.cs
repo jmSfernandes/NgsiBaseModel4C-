@@ -1,7 +1,7 @@
 ﻿using System;
 using NGSIBaseModel.Models;
 
-namespace MyPoc.Models
+namespace NGSIBaseModel.Test.TestModels
 {
     public enum TimeOfDay
     {

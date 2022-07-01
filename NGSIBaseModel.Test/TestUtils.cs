@@ -1,9 +1,11 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using NGSIBaseModel.Models;
+using NGSIBaseModel.Test.TestModels;
 using RestSharp;
 using Xamarin.Forms;
 
@@ -12,23 +14,7 @@ namespace NGSIBaseModel.Test
 {
     public class TestUtils
     {
-        public static void InsertCourseMockData(String file)
-        {
-            var testData = new StreamReader(file).ReadToEnd();
-            var client = new RestClient("http://socialiteorion2.dei.uc.pt:9000/v2/op/update");
-            var request = new RestRequest(Method.POST);
-            request.AddHeader("Fiware-ServicePath", "/");
-            request.AddHeader("Fiware-Service", "batina_test");
-            request.AddHeader("Content-Type", "application/json");
-
-            var body = JsonConvert.SerializeObject(new
-                {actionType = "REPLACE", entities = JsonConvert.DeserializeObject(testData)});
-
-            request.AddParameter("undefined", body, ParameterType.RequestBody);
-            IRestResponse response = client.Execute(request);
-            Debug.Write(response.Content);
-        }
-
+    
         public static JArray readMockData(String file)
         {
             var test_data = new StreamReader(file).ReadToEnd();
@@ -50,49 +36,7 @@ namespace NGSIBaseModel.Test
             return (JToken) mockData;
         }
 
-        public static ImageSource GetImage(String id)
-        {
-            var client = new RestClient("http://socialiteorion2.dei.uc.pt:9000/v2/entities/" + id +
-                                        "?type=media_file&options=keyValues");
-            var request = new RestRequest(Method.GET);
-            request.AddHeader("Fiware-ServicePath", "/");
-            request.AddHeader("Fiware-Service", "batina_test");
-
-            IRestResponse response = client.Execute(request);
-            var responseJson = JToken.Parse(response.Content);
-            ImageSource im = ImageSource.FromUri(new Uri(responseJson["download_path"].ToString()));
-            return im;
-        }
-
-        public static T GetEntity<T>(String id)
-        {
-            var type = typeof(T).Name.ToLower();
-            var client = new RestClient("http://socialiteorion2.dei.uc.pt:9000/v2/entities/" + id + "?type=" + type +
-                                        "&options=keyValues");
-            var request = new RestRequest(Method.GET);
-            request.AddHeader("Fiware-ServicePath", "/");
-            request.AddHeader("Fiware-Service", "batina_test");
-
-            IRestResponse response = client.Execute(request);
-            var responseJson = JToken.Parse(response.Content);
-
-            return NgsiBaseModel.FromNgsi<T>(responseJson);
-        }
-
-        public static void DeleteEntity<T>(String id)
-        {
-            var type = typeof(T).Name.ToLower();
-            var client = new RestClient("http://socialiteorion2.dei.uc.pt:9000/v2/entities/" + id + "?type=" + type);
-            var request = new RestRequest(Method.DELETE);
-            request.AddHeader("Fiware-ServicePath", "/");
-            request.AddHeader("Fiware-Service", "batina_test");
-
-            IRestResponse response = client.Execute(request);
-            //var responseJson = JToken.Parse(response.Content);
-
-            //return NgsiBaseModel.fromNGSI<T>(responseJson);
-        }
-
+   
         public static bool CompareJson(JObject obj1, JObject obj2)
         {
             obj1 = (JObject) JsonConvert.DeserializeObject(obj1.ToString());
@@ -130,6 +74,42 @@ namespace NGSIBaseModel.Test
 
             //  if all properties are equal return true;
             return isEqual;
+        }
+        public static Car InitCar()
+        {
+            Car test = new Car();
+            test.id = "car_1";
+            test.color = "red";
+            test.model = "corvette";
+            test.year = 1987;
+
+            test.encodeMe = "This car is a simple car==!\"(with a red hood)";
+            test.ignoreMe = "I was ignored!";
+
+
+            test.timestamp = "2020-10-07T09:50:00Z";
+            test.timestamp1 = new DateTime(2020, 10, 7, 10, 50, 0).ToUniversalTime();
+            var a = NgsiUtils.DatetimeToString(test.timestamp1);
+            var b = NgsiUtils.StringToDatetime(test.timestamp);
+            JArray variations = new JArray
+            {
+                "Street",
+                "Lounge",
+                "Easy",
+                "SportsWagon"
+            };
+            test.variations = variations.ToString();
+            test.variations1 = variations;
+            test.variations2 = new List<string>()
+            {
+                "Street",
+                "Lounge",
+                "Easy",
+                "SportsWagon"
+            };
+
+
+            return test;
         }
     }
 }

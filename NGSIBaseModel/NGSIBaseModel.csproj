@@ -1,7 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFramework>netstandard2.0</TargetFramework>
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
         <Title>NgsiBaseModel 4 C#</Title>
         <Authors>José Marcelo Fernandes</Authors>
@@ -14,6 +13,9 @@ This parser is able to simply convert the Json objects received in the NGSI form
         <RepositoryUrl>https://github.com/jmSfernandes/NgsiBaseModel4CSharp.git</RepositoryUrl>
         <RepositoryType>git</RepositoryType>
         <PackageTags>NGSI10, FIWARE, XAMARIN</PackageTags>
+        <LangVersion>10</LangVersion>
+        <PackageVersion>1.1.0</PackageVersion>
+        <TargetFrameworks>net6.0;netstandard2.0</TargetFrameworks>
     </PropertyGroup>
 
     <ItemGroup>

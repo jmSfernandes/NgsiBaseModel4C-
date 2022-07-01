@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using NGSIBaseModel.Models;
 
-namespace MyPoc.Models
+namespace NGSIBaseModel.Test.TestModels
 {
     public class MedicationEntryGroup : NgsiBaseModel
     {
