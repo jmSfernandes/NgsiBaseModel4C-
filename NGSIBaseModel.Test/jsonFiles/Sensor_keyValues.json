@@ -2,6 +2,7 @@
   "id": "sensor_1",
   "type": "sensor",
   "model": "arduino_dth_11",
+  "accuracy":0.5,
   "timestamp": "2020-10-07T09:50:00Z",
   "accelerometerlist": [
     {

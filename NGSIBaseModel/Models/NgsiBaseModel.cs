@@ -11,12 +11,12 @@ namespace NGSIBaseModel.Models;
 
 public class NgsiBaseModel
 {
-    private static Attribute ignoreAttr = new NGSIIgnore();
-    private static Attribute encodeAttr = new NGSIEncode();
-    private static Attribute jobjAttr = new NGSIJObject();
-    private static Attribute jarrayAttr = new NGSIJArray();
-    private static Attribute dateTimeAttr = new NGSIDateTime();
-    private static Attribute mapIds = new NGSIMapIds();
+    private static readonly Attribute IgnoreAttr = new NGSIIgnore();
+    private static readonly Attribute EncodeAttr = new NGSIEncode();
+    private static readonly Attribute JObjAttr = new NGSIJObject();
+    private static readonly Attribute JArrayAttr = new NGSIJArray();
+    private static readonly Attribute DateTimeAttr = new NGSIDateTime();
+    private static readonly Attribute MapIdsAttr = new NGSIMapIds();
 
     public static T FromNgsi<T>(JToken entity)
     {
@@ -28,133 +28,132 @@ public class NgsiBaseModel
             }
         }
 
-        T obj = Activator.CreateInstance<T>();
+        var obj = Activator.CreateInstance<T>();
         foreach (var property in typeof(T).GetProperties())
         {
-            var isIgnore = property.GetCustomAttributes().Contains(new NGSIIgnore());
-            var isEncoded = property.GetCustomAttributes().Contains(new NGSIEncode());
-            var isJObject = property.GetCustomAttributes().Contains(new NGSIJObject());
-            var isJArray = property.GetCustomAttributes().Contains(new NGSIJArray());
+            var isIgnore = property.GetCustomAttributes().Contains(IgnoreAttr);
+            if (isIgnore || !((JObject) entity).ContainsKey(property.Name.ToLower())) continue;
 
-            JToken attribute = entity[property.Name.ToLower()];
-            if (attribute != null && !isIgnore)
-            {
-                if (attribute.Type == JTokenType.Object && attribute["value"] != null)
-                {
-                    var value = attribute["value"];
-                    obj = SetValue<T>(obj, value, property, isEncoded, isJObject, isJArray);
-                }
-                else
-                {
-                    obj = SetValue<T>(obj, attribute, property, isEncoded, isJObject, isJArray);
-                }
-            }
+
+            var isEncoded = property.GetCustomAttributes().Contains(EncodeAttr);
+            var isJObject = property.GetCustomAttributes().Contains(JObjAttr);
+            var isJArray = property.GetCustomAttributes().Contains(JArrayAttr);
+            var isMapId = property.GetCustomAttributes().Contains(MapIdsAttr);
+
+
+            var attribute = entity[property.Name.ToLower()];
+
+            if (attribute.Type == JTokenType.Object && attribute["value"] != null)
+                attribute = attribute["value"];
+
+            obj = SetValue<T>(obj, attribute, property, isEncoded, isJObject, isJArray, isMapId);
         }
 
         return obj;
     }
 
-    private static T SetValue<T>(Object obj, JToken value, PropertyInfo property, bool isEncoded, bool isJObject,
-        bool isJArray)
+    private static T SetValue<T>(object obj, JToken value, PropertyInfo property, bool isEncoded, bool isJObject,
+        bool isJArray, bool isMapId)
     {
-        if (value != null)
+        if (value == null) return (T) obj;
+
+        if (value.Type == JTokenType.String)
         {
-            if (value.Type == JTokenType.String)
-            {
-                if (isEncoded)
-                    value = NgsiUtils.DecodeAttribute(value);
+            if (isMapId)
+                return (T) SetObjectProperty(obj, value, property, isEncoded, isMapId);
 
+            if (isEncoded)
+                value = NgsiUtils.DecodeAttribute(value);
+
+
+            property.SetValue(obj, value.ToString());
+        }
+        else if (value.Type == JTokenType.Date)
+        {
+            var dateTime = NgsiUtils.StringToDatetime(value.ToString());
+            if (property.GetCustomAttributes().Contains(new NGSIDateTime()))
+                property.SetValue(obj, dateTime);
+            else
+            {
+                dateTime = dateTime.ToLocalTime();
+                property.SetValue(obj, NgsiUtils.DatetimeToString(dateTime));
+            }
+        }
+        else if (value.Type == JTokenType.Integer)
+        {
+            property.SetValue(obj, int.Parse(value.ToString()));
+        }
+        else if (value.Type == JTokenType.Float && property.PropertyType == typeof(float))
+        {
+            property.SetValue(obj, float.Parse(value.ToString()));
+        }
+        else if (value.Type == JTokenType.Float)
+        {
+            property.SetValue(obj, double.Parse(value.ToString()));
+        }
+        else if (value.Type == JTokenType.Array)
+        {
+            if (isJArray)
+            {
                 property.SetValue(obj, value.ToString());
-                /*if (property.Name.ToLower().Equals("picture"))
-                    property.SetValue(obj, setPicture(value.ToString()));
-                else*/
             }
-            else if (value.Type == JTokenType.Date)
+            else if (property.PropertyType.Name.ToLower().Equals("jarray"))
             {
-                var dateTime = NgsiUtils.StringToDatetime(value.ToString());
-                if (property.GetCustomAttributes().Contains(new NGSIDateTime()))
-                    property.SetValue(obj, dateTime);
-                else
+                property.SetValue(obj, (JArray) value);
+            }
+            else
+            {
+                var type = property.PropertyType;
+                if (!type.IsGenericType || type.GetGenericTypeDefinition() != typeof(List<>)) return (T) obj;
+
+                var itemType = type.GetGenericArguments()[0]; // use this...
+                var array = Activator.CreateInstance(type);
+
+                foreach (var v in value)
                 {
-                    dateTime = dateTime.ToLocalTime();
-                    property.SetValue(obj, NgsiUtils.DatetimeToString(dateTime));
-                }
-            }
-            else if (value.Type == JTokenType.Integer)
-            {
-                property.SetValue(obj, Int32.Parse(value.ToString()));
-            }
-            else if (value.Type == JTokenType.Float && property.PropertyType == typeof(float))
-            {
-                property.SetValue(obj, float.Parse(value.ToString()));
-            }
-            else if (value.Type == JTokenType.Float)
-            {
-                property.SetValue(obj, double.Parse(value.ToString()));
-            }
-            else if (value.Type == JTokenType.Array)
-            {
-                if (isJArray)
-                {
-                    property.SetValue(obj, value.ToString());
-                }
-                else if (property.PropertyType.Name.ToLower().Equals("jarray"))
-                {
-                    property.SetValue(obj, (JArray) value);
-                }
-                else
-                {
-                    var type = property.PropertyType;
-                    if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(List<>))
+                    var val = v;
+                    if (isEncoded)
+                        val = NgsiUtils.DecodeAttribute(val);
+
+                    if (itemType.Name.ToLower().Equals("string"))
                     {
-                        var itemType = type.GetGenericArguments()[0]; // use this...
-                        var array = Activator.CreateInstance(type);
-                        var name = itemType.Name;
-                        foreach (JToken v in value)
+                        array.GetType().GetMethod("Add").Invoke(array, new[] {val.ToString()});
+                    }
+                    else
+                    {
+                        var objSub = Activator.CreateInstance(itemType);
+
+                        if (itemType.BaseType != null && itemType.BaseType == typeof(NgsiBaseModel) && !isMapId)
                         {
-                            var val = v;
-                            if (isEncoded)
-                                val = NgsiUtils.DecodeAttribute(val);
-
-                            if (itemType.Name.Equals("String"))
-                            {
-                                array.GetType().GetMethod("Add").Invoke(array, new[] {val.ToString()});
-                            }
-                            else
-                            {
-                                var objSub = Activator.CreateInstance(itemType);
-                                if (itemType.BaseType != null && itemType.BaseType == typeof(NgsiBaseModel))
-                                {
-                                    objSub = typeof(NgsiBaseModel).GetMethod("FromNgsi")
-                                        .MakeGenericMethod(itemType)
-                                        .Invoke(typeof(NgsiBaseModel), new object[] {val});
-                                }
-                                else
-                                {
-                                    objSub.GetType().GetProperty("id").SetValue(objSub, val.ToString());
-                                }
-
-                                array.GetType().GetMethod("Add").Invoke(array, new object[] {objSub});
-                            }
+                            objSub = typeof(NgsiBaseModel).GetMethod("FromNgsi")
+                                .MakeGenericMethod(itemType)
+                                .Invoke(typeof(NgsiBaseModel), new object[] {val});
+                        }
+                        else
+                        {
+                            objSub.GetType().GetProperty("id").SetValue(objSub, val.ToString());
                         }
 
-                        property.SetValue(obj, array);
+                        array.GetType().GetMethod("Add").Invoke(array, new object[] {objSub});
                     }
                 }
+
+                property.SetValue(obj, array);
             }
-            else if (value.Type == JTokenType.Object)
-            {
-                if (isJObject)
-                    property.SetValue(obj, value.ToString());
-                else
-                    obj = SetObjectProperty(obj, value, property, isEncoded);
-            }
+        }
+        else if (value.Type == JTokenType.Object)
+        {
+            if (isJObject)
+                property.SetValue(obj, value.ToString());
+            else
+                return (T) SetObjectProperty(obj, value, property, isEncoded, isMapId);
         }
 
         return (T) obj;
     }
 
-    private static object SetObjectProperty(object obj, JToken value, PropertyInfo property, bool isEncoded)
+    private static object SetObjectProperty(object obj, JToken value, PropertyInfo property, bool isEncoded,
+        bool isMapId)
     {
         if (isEncoded)
             value = NgsiUtils.DecodeAttribute(value);
@@ -162,10 +161,19 @@ public class NgsiBaseModel
         var objSub = Activator.CreateInstance(objType);
         if (objType.BaseType != null && objType.BaseType == typeof(NgsiBaseModel))
         {
-            objSub = typeof(NgsiBaseModel).GetMethod("FromNgsi").MakeGenericMethod(objType)
-                .Invoke(obj, new object[] {value});
-            property.SetValue(obj, objSub);
+            if (isMapId)
+                objSub.GetType().GetProperty("id").SetValue(objSub, value.ToString());
+            else
+                objSub = typeof(NgsiBaseModel).GetMethod("FromNgsi")
+                    .MakeGenericMethod(objType)
+                    .Invoke(obj, new object[] {value});
         }
+        else
+        {
+            objSub = JsonConvert.DeserializeObject(value.ToString());
+        }
+
+        property.SetValue(obj, objSub);
 
         return obj;
     }
@@ -194,15 +202,15 @@ public class NgsiBaseModel
         foreach (var prop in properties)
         {
             var attrs = prop.GetCustomAttributes();
-            var isIgnore = attrs.Contains(ignoreAttr);
+            var isIgnore = attrs.Contains(IgnoreAttr);
 
             if (isIgnore || (prop.Name == "id")) continue;
 
-            var isEncoded = attrs.Contains(encodeAttr);
-            var isJObject = attrs.Contains(jobjAttr);
-            var isJArray = attrs.Contains(jarrayAttr);
-            var isDate = attrs.Contains(dateTimeAttr);
-            var isMapIds = attrs.Contains(mapIds);
+            var isEncoded = attrs.Contains(EncodeAttr);
+            var isJObject = attrs.Contains(JObjAttr);
+            var isJArray = attrs.Contains(JArrayAttr);
+            var isDate = attrs.Contains(DateTimeAttr);
+            var isMapIds = attrs.Contains(MapIdsAttr);
 
 
             var value = prop.GetValue(obj);
@@ -436,9 +444,14 @@ public class NgsiBaseModel
         {
             try
             {
-                var isIgnore = property.GetCustomAttributes().Contains(new NGSIIgnore());
+                var isIgnore = property.GetCustomAttributes().Contains(IgnoreAttr);
                 if (isIgnore)
                     continue;
+                if (property.GetValue(this) == null && property.GetValue(obj) != null)
+                {
+                    return false;
+                }
+
                 if ((property.PropertyType.IsGenericType &&
                      property.PropertyType.GetGenericTypeDefinition() == typeof(List<>)) ||
                     property.PropertyType.Name.Equals("JArray"))
@@ -449,8 +462,11 @@ public class NgsiBaseModel
                             return false;
                     }
                 }
-                else if (!property.GetValue(this).Equals(property.GetValue(obj)))
-                    return false;
+                else if (property.GetValue(this) != null)
+                {
+                    if (!property.GetValue(this).Equals(property.GetValue(obj)))
+                        return false;
+                }
             }
             catch (Exception e)
             {

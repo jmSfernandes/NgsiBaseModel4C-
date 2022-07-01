@@ -13,7 +13,7 @@ namespace NGSIBaseModel.Test
         public void TestFromNgsiComplexList()
         {
             var expected = InitSensor();
-
+            expected.accelerometerList.ForEach(x => x.id = null);
             var json = (JObject) TestUtils.ReadJsonFromFile("../../../jsonFiles/Sensor.json");
             var actual = NgsiBaseModel.FromNgsi<Sensor>(json);
 
@@ -24,9 +24,52 @@ namespace NGSIBaseModel.Test
         public void TestFromNgsiComplexListKeyValues()
         {
             var expected = InitSensor();
-
+            expected.accelerometerList.ForEach(x => x.id = null);
             var json = (JObject) TestUtils.ReadJsonFromFile("../../../jsonFiles/Sensor_keyValues.json");
             var actual = NgsiBaseModel.FromNgsi<Sensor>(json);
+
+            Assert.Equal(actual, expected);
+        }
+
+        [Fact]
+        public void TestFromNgsiComplexListMapId()
+        {
+            var expected = InitSensorById();
+            expected.accelerometerList.ForEach(x =>
+            {
+                x.t = default;
+                x.x = default;
+                x.y = default;
+                x.z = default;
+            });
+            var json = (JObject) TestUtils.ReadJsonFromFile("../../../jsonFiles/Sensor_map_byId.json");
+            var actual = NgsiBaseModel.FromNgsi<SensorMapById>(json);
+
+            Assert.Equal(actual, expected);
+        }
+
+        [Fact]
+        public void TestFromNgsiComplexObject()
+        {
+            var expected = InitModelObject();
+            expected.accelerometer.id = null;
+            var json = (JObject) TestUtils.ReadJsonFromFile("../../../jsonFiles/NgsiModelObject.json");
+            var actual = NgsiBaseModel.FromNgsi<NgsiModelObject>(json);
+
+            Assert.Equal(actual, expected);
+        }
+        
+        
+        [Fact]
+        public void TestFromNgsiComplexObjectMapById()
+        {
+            var expected = InitModelObjectById();
+            expected.accelerometer.t = default;
+            expected.accelerometer.x = default;
+            expected.accelerometer.y = default;
+            expected.accelerometer.z = default;
+            var json = (JObject) TestUtils.ReadJsonFromFile("../../../jsonFiles/NgsiModelObjectById.json");
+            var actual = NgsiBaseModel.FromNgsi<NgsiModelObjectById>(json);
 
             Assert.Equal(actual, expected);
         }
@@ -117,7 +160,7 @@ namespace NGSIBaseModel.Test
         }
 
 
-        private Sensor InitSensorById()
+        private SensorMapById InitSensorById()
         {
             var test = new SensorMapById
             {
