@@ -389,7 +389,10 @@ public class NgsiBaseModel
         var val = JsonConvert.SerializeObject(value);
         if (isEncoded)
             val = NgsiUtils.EncodeAttribute(val);
-        return JToken.Parse(val);
+        var obj = JToken.Parse(val);
+        if (!value.GetType().Name.ToLower().Equals("string") && value.GetType().GetProperty("id") != null)
+            ((JObject) obj).Remove("id");
+        return obj;
     }
 
     private static JArray MapListByValue(object value, PropertyInfo property, bool isEncoded)
@@ -407,12 +410,10 @@ public class NgsiBaseModel
 
     private static JArray RemoveIdsFromObject(JArray value)
     {
-       
         foreach (var jToken in value)
         {
             var v = (JObject) jToken;
             v.Remove("id");
-       
         }
 
         return value;

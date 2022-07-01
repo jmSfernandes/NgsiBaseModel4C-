@@ -1,0 +1,16 @@
+{
+  "id": "model_1",
+  "type": "ngsimodelobjectbyid",
+  "location": {
+    "type": "Text",
+    "value": "home"
+  },
+  "distancehome": {
+    "type": "Float",
+    "value": 1000.0
+  },
+  "accelerometer": {
+    "type": "Text",
+    "value": "acel_1"
+  }
+}

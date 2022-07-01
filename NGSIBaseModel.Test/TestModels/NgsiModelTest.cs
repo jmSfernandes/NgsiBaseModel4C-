@@ -11,6 +11,6 @@ namespace NGSIBaseModel.Test.TestModels
 
         public string location { get; set; }
         public double distanceHome { get; set; }
-        [NGSIJArray] public string accelerometer { get; set; }
+        [NGSIJArray] public Accelerometer accelerometer { get; set; }
     }
 }

@@ -35,7 +35,7 @@ namespace NGSIBaseModel.Test.TestModels
 
         public JArray variations1 { get; set; }
 
-        public List<String> variations2 { get; set; }
+        public List<string> variations2 { get; set; }
 
         [NGSIIgnore] public string ignoreMe { get; set; }
 
