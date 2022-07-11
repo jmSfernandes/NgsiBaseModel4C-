@@ -20,7 +20,7 @@ And also convert Java classes to the equivalent and compliant NGSI10 entities.
 
 
 - You must use the JObject from the [Newtonsoft library](https://www.nuget.org/packages/Newtonsoft.Json). You can easly
-  convert from and to other Json libraries by calling the method `toString()` and parsing the string.
+  convert from and to other Json libraries by calling the method `ToString()` and parsing the string.
 
 
 - The attributes of the class should be named the same as the entity attributes (ignoring case);
