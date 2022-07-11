@@ -127,6 +127,16 @@ namespace NGSIBaseModel.Test
             Assert.NotNull(obj);
         }
 
+        [Fact]
+        public void TestNgsiDecodeIgnore()
+        {
+            var expected = "Em que tipo de veículo esteve?";
+            var actual= NgsiUtils.DecodeAttribute(expected);
+
+            
+            Assert.Equal(expected,actual);
+        }
+
 
         private SmartphoneData InitSmartphoneData()
         {

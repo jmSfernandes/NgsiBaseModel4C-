@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Text;
 using System.Web;
 using Newtonsoft.Json.Linq;
 
@@ -8,13 +9,13 @@ public static class NgsiUtils
 {
     public static JToken DecodeAttribute(JToken value)
     {
-        var decoded = HttpUtility.UrlDecode(value.ToString());
+        var decoded = HttpUtility.UrlDecode(value.ToString(), Encoding.UTF8);
         return (JToken) new JValue(decoded);
     }
 
     public static string EncodeAttribute(string value)
     {
-        var encoded = HttpUtility.UrlEncode(value);
+        var encoded = HttpUtility.UrlEncode(value, Encoding.UTF8);
         encoded = encoded.Replace("(", "%28").Replace(")", "%29").Replace("+", "%20");
         return encoded;
     }
