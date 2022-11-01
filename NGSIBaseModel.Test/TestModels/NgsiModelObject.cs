@@ -1,4 +1,5 @@
 ﻿using NGSIBaseModel.Models;
+using NGSIBaseModel.Models.Attributes;
 
 namespace NGSIBaseModel.Test.TestModels;
 

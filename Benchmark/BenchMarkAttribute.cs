@@ -1,6 +1,7 @@
 ﻿using System.Reflection;
 using BenchmarkDotNet.Attributes;
 using NGSIBaseModel.Models;
+using NGSIBaseModel.Models.Attributes;
 using NGSIBaseModel.Test;
 using NGSIBaseModel.Test.TestModels;
 

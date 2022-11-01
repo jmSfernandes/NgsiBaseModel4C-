@@ -14,7 +14,7 @@ This parser is able to simply convert the Json objects received in the NGSI form
         <RepositoryType>git</RepositoryType>
         <PackageTags>NGSI10, FIWARE, XAMARIN</PackageTags>
         <LangVersion>10</LangVersion>
-        <PackageVersion>1.2.0</PackageVersion>
+        <PackageVersion>1.2.2</PackageVersion>
         <TargetFrameworks>net6.0;netstandard2.0</TargetFrameworks>
     </PropertyGroup>
 
