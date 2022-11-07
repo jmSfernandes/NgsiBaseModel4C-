@@ -1,4 +1,6 @@
 ﻿using System.Reflection;
+using System.Text.Json;
+using System.Text.Json.Nodes;
 using BenchmarkDotNet.Attributes;
 using Newtonsoft.Json.Linq;
 using NGSIBaseModel;
@@ -33,68 +35,69 @@ public class BenchMarkMethods
         property = _car.GetType().GetProperty("model");
         propertyName = property.PropertyType.Name;
     }
+    /*    
+      [Benchmark]
+      public Car ActivatorMethod()
+      {
+         // return (Car) Activator.CreateInstance(typeof(Car),1992);
+         return (Car) Activator.CreateInstance(typeof(Car));
+      }
+      
+      [Benchmark]
+      public Car ActivatorMethodOneParams()
+      {
+          // return (Car) Activator.CreateInstance(typeof(Car),1992);
+          return (Car) Activator.CreateInstance(typeof(Car),1992);
+      }
+      
+      [Benchmark]
+      public Car ActivatorMethodTwoParams()
+      {
+          // return (Car) Activator.CreateInstance(typeof(Car),1992);
+          return (Car) Activator.CreateInstance(typeof(Car),1992,"red");
+      }
+      
+      
+      [Benchmark]
+      public Car GetConstructorInfo()
+      {
+          return (Car)typeof(Car).GetConstructor(BindingFlags.Public|BindingFlags.Instance, new []{typeof(int)})
+              .Invoke(new object?[]{1992});
+      }
+  
+      private readonly ConstructorInfo? ctroInfo =
+          typeof(Car).GetConstructor(BindingFlags.Public | BindingFlags.Instance, new []{typeof(int)});
+      
+      private readonly object[] empty=new object?[]{1992};
+      
+      [Benchmark]
+      public Car GetConstructorInfoCatched()
+      {
+          return (Car)ctroInfo.Invoke(new object?[]{1992});
+      }
+      [Benchmark]
+      public Car GetConstructorInfoCatched2()
+      {
+          return (Car)ctroInfo.Invoke(empty);
+      }
     
-    [Benchmark]
-    public Car ActivatorMethod()
-    {
-       // return (Car) Activator.CreateInstance(typeof(Car),1992);
-       return (Car) Activator.CreateInstance(typeof(Car));
-    }
-    
-    [Benchmark]
-    public Car ActivatorMethodOneParams()
-    {
-        // return (Car) Activator.CreateInstance(typeof(Car),1992);
-        return (Car) Activator.CreateInstance(typeof(Car),1992);
-    }
-    
-    [Benchmark]
-    public Car ActivatorMethodTwoParams()
-    {
-        // return (Car) Activator.CreateInstance(typeof(Car),1992);
-        return (Car) Activator.CreateInstance(typeof(Car),1992,"red");
-    }
-    
-    
-    [Benchmark]
-    public Car GetConstructorInfo()
-    {
-        return (Car)typeof(Car).GetConstructor(BindingFlags.Public|BindingFlags.Instance, new []{typeof(int)})
-            .Invoke(new object?[]{1992});
-    }
+  
+      [Benchmark]
+      public JObject ToNgsi()
+      {
+          return NgsiBaseModel.ToNgsi<Car>(_car);
+      }
+        */
 
-    private readonly ConstructorInfo? ctroInfo =
-        typeof(Car).GetConstructor(BindingFlags.Public | BindingFlags.Instance, new []{typeof(int)});
-    
-    private readonly object[] empty=new object?[]{1992};
-    
     [Benchmark]
-    public Car GetConstructorInfoCatched()
-    {
-        return (Car)ctroInfo.Invoke(new object?[]{1992});
-    }
-    [Benchmark]
-    public Car GetConstructorInfoCatched2()
-    {
-        return (Car)ctroInfo.Invoke(empty);
-    }
-    /*
-
-    [Benchmark]
-    public JObject ToNgsi()
-    {
-        return NgsiBaseModel.ToNgsi<Car>(_car);
-    }
-    
-    
-    [Benchmark]
-    public JObject ToJson()
+    public JObject ToJsonNewtonsoft()
     {
         return JObject.FromObject(_car);
     }
-*/
 
-    /*
+  
+
+
     [Benchmark]
     public Car FromNgsiKeyValues()
     {
@@ -106,8 +109,6 @@ public class BenchMarkMethods
     {
         return NgsiBaseModel.FromNgsi<Car>(_carJson2);
     }
-    */
 
- 
 
 }

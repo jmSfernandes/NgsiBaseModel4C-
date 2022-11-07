@@ -1,5 +1,8 @@
 using System;
 using System.Collections.Generic;
+using System.Text.Json;
+using System.Text.Json.Nodes;
+using System.Text.Json.Serialization;
 using Newtonsoft.Json.Linq;
 using NGSIBaseModel.Models;
 using NGSIBaseModel.Test.TestModels;
@@ -20,6 +23,17 @@ public class TestsNgsiBaseModel
     public void TestNgsiToNgsi()
     {
         var test = TestUtils.InitCar();
+        var expected = (JObject) TestUtils.ReadJsonFromFile("../../../jsonFiles/car.json");
+        var actual = NgsiBaseModel.ToNgsi<Car>(test);
+        Assert.True(TestUtils.CompareJson(expected, actual));
+    }
+    
+    [Fact]
+    public void TestNgsiToNgsi2()
+    {
+        var test = TestUtils.InitCar();
+        var json = JsonSerializer.Serialize(test);
+        
         var expected = (JObject) TestUtils.ReadJsonFromFile("../../../jsonFiles/car.json");
         var actual = NgsiBaseModel.ToNgsi<Car>(test);
         Assert.True(TestUtils.CompareJson(expected, actual));

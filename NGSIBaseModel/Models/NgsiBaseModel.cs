@@ -386,7 +386,7 @@ public class NgsiBaseModel
 
     private static string MapById(object value, bool isEncoded)
     {
-        string val = (string) value.GetType().GetProperty("id").GetValue(value);
+        var val = (string) value.GetType().GetProperty("id").GetValue(value);
         if (isEncoded)
             val = NgsiUtils.EncodeAttribute(val);
         return val;
